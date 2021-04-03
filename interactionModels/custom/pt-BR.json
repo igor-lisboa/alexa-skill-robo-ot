@@ -1,0 +1,127 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "robô o. t.",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+            "sair"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "ajuda",
+            "socorro",
+            "não sei",
+            "preciso de ajuda"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "para"
+          ]
+        },
+        {
+          "name": "ConsultaPrecoUnitarioIntent",
+          "slots": [
+            {
+              "name": "ativo",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "consulta preço unitário",
+            "consultar preço unitário",
+            "consulta p.u.",
+            "consultar p.u.",
+            "desejo {ativo}",
+            "quero {ativo}",
+            "desejo p.u. de {ativo}",
+            "desejo p.u. do {ativo}",
+            "desejo p.u. da {ativo}",
+            "p.u. {ativo}",
+            "desejo do {ativo}",
+            "desejo de {ativo}",
+            "desejo da {ativo}",
+            "preço unitário de {ativo}",
+            "preço unitário da {ativo}",
+            "p.u. de {ativo}",
+            "p.u. da {ativo}",
+            "quero de {ativo}",
+            "quero da {ativo}",
+            "quero do {ativo}",
+            "preço unitário do {ativo}",
+            "p.u. do {ativo}",
+            "p.u.",
+            "preço unitário"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": [
+            "quais são minhas opções"
+          ]
+        },
+        {
+          "name": "ConsultaDestaquesIntent",
+          "slots": [],
+          "samples": [
+            "lista destaques",
+            "listar destaques",
+            "lista os destaques para mim",
+            "destaques",
+            "quero saber os destaques",
+            "quais são os destaques"
+          ]
+        }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "ConsultaPrecoUnitarioIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "ativo",
+              "type": "AMAZON.SearchQuery",
+              "elicitationRequired": true,
+              "confirmationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.772137305209.6383112177",
+                "confirmation": "Confirm.Slot.208080939466.1335029145817"
+              }
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.772137305209.6383112177",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Deseja saber o preço unitário de qual ativo?"
+          }
+        ]
+      },
+      {
+        "id": "Confirm.Slot.208080939466.1335029145817",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Só para confirmar, você deseja saber o p.u. de algum ativo que tenha {ativo} como identificador, correto?"
+          }
+        ]
+      }
+    ]
+  },
+  "version": "22"
+}
