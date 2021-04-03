@@ -88,7 +88,7 @@ function getAndValidatePortNumber() {
     }
     if (portNumberArgument === 0) {
         console.log('The TCP server will listen on a port that is free.'
-        + 'Check logs to find out what port number is being used');
+            + 'Check logs to find out what port number is being used');
     }
     return portNumberArgument;
 }

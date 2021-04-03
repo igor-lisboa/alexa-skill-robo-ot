@@ -6,7 +6,7 @@
 const Alexa = require('ask-sdk-core');
 const axios = require('axios');
 
-const hello='Olá, tudo bem?';
+const hello = 'Olá, tudo bem?';
 const helpSpeak = 'Você pode me pedir um Preço unitário ou me pedir para listar os destaques.'
 
 const LaunchRequestHandler = {
@@ -28,36 +28,34 @@ const ConsultaDestaquesIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ConsultaDestaquesIntent';
     },
-   async handle(handlerInput) {
-       let speakOutput = "";
+    async handle(handlerInput) {
+        let speakOutput = '';
         try {
-            const res = await axios.get("https://api.oliveiratrust.com.br/v1/titulos/destaques");
-            const data=res.data;
-            if(data.length===0){
-                speakOutput = `${speakOutput} Nenhum destaque foi encontrado.`;
-            }else if(data.length===1){
-                speakOutput = `${speakOutput} O destaque encontrado foi ${data[0].descricao}.`;
-            }else{
-               speakOutput = `${speakOutput} Foram encontrados ${data.length} destaques. Dentre eles `;
+            const { data } = await axios.get('https://api.oliveiratrust.com.br/v1/titulos/destaques');
+            if (data.length === 0) {
+                speakOutput += `Nenhum destaque foi encontrado.`;
+            } else if (data.length === 1) {
+                speakOutput += `O destaque encontrado foi ${data[0].descricao}.`;
+            } else {
+                speakOutput += `Foram encontrados ${data.length} destaques. Dentre eles `;
+                // percorre os destaques
                 for (let i = 0; i < data.length; i += 1) {
-                    if(i === (data.length-1)){
-                        speakOutput = `${speakOutput} e `;
-                    }else{
-                        speakOutput = `${speakOutput} , `;
+                    if (i === (data.length - 1)) {
+                        speakOutput += `e `;
+                    } else {
+                        speakOutput += `, `;
                     }
-                  speakOutput = `${speakOutput} ${data[i].descricao} `;
+                    speakOutput += `${data[i].descricao}`;
                 }
-                speakOutput = `${speakOutput}.`;
+                speakOutput += `.`;
             }
-          } catch (err) {
-            speakOutput = `${speakOutput} E não foi possível realizar a busca.`;
-            console.log(`ERROR: ${JSON.stringify(err)}`);
+        } catch (err) {
+            speakOutput += `Não foi possível buscar os destaques.`;
             console.log(err);
-          }
+        }
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            .reprompt('Deseja saber o preço unitário de qual ativo?')
             .getResponse();
     }
 };
@@ -67,36 +65,34 @@ const ConsultaPrecoUnitarioIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ConsultaPrecoUnitarioIntent';
     },
-   async handle(handlerInput) {
-        
-        const ativoDesejado=handlerInput.requestEnvelope.request.intent.slots.ativo.value;
-        
+    async handle(handlerInput) {
+        // recupera ativo que vem do slot
+        const ativoDesejado = handlerInput.requestEnvelope.request.intent.slots.ativo.value;
+        // inicia variavel q sera falada
         let speakOutput = `Foi feita a busca por ${ativoDesejado}. `;
-        const urlConsulta = `https://api.oliveiratrust.com.br/v1/titulos/todos?indexador=TODOS&order=nome&search=${ativoDesejado}&type=todos`;
         try {
-            const res = await axios.get(urlConsulta);
-            const data=res.data;
-            if(data.length===0){
-                speakOutput = `${speakOutput} E nenhum ativo foi encontrado.`;
-            }else if(data.length===1){
-                speakOutput = `${speakOutput} E foi encontrado o ativo ${data[0].nomeg} com o preço unitário cotado a ${data[0].valor_pu} em ${data[0].data_pu}.`;
-            }else{
-               speakOutput = `${speakOutput} E foram encontrados ${data.length} ativos. Dentre eles `;
+            const { data } = await axios.get(`https://api.oliveiratrust.com.br/v1/titulos/todos?indexador=TODOS&order=nome&search=${ativoDesejado}&type=todos`);
+            if (data.length === 0) {
+                speakOutput += 'E nenhum ativo foi encontrado.';
+            } else if (data.length === 1) {
+                speakOutput += `E foi encontrado o ativo ${data[0].nomeg} com o preço unitário cotado a ${data[0].valor_pu} em ${data[0].data_pu}.`;
+            } else {
+                speakOutput += `E foram encontrados ${data.length} ativos. Dentre eles `;
+                // percorre ativos encontrados
                 for (let i = 0; i < data.length; i += 1) {
-                    if(i === (data.length-1)){
-                        speakOutput = `${speakOutput} e `;
-                    }else{
-                        speakOutput = `${speakOutput} , `;
+                    if (i === (data.length - 1)) {
+                        speakOutput += 'e ';
+                    } else {
+                        speakOutput += ', ';
                     }
-                  speakOutput = `${speakOutput} ${data[i].nomeg} com o preço unitário cotado a ${data[i].valor_pu} em ${data[i].data_pu} `;
+                    speakOutput += `${speakOutput} ${data[i].nomeg} com o preço unitário cotado a ${data[i].valor_pu} em ${data[i].data_pu} `;
                 }
-                speakOutput = `${speakOutput}.`;
+                speakOutput += '.';
             }
-          } catch (err) {
-            speakOutput = `${speakOutput} E não foi possível realizar a busca.`;
-            console.log(`ERROR: ${JSON.stringify(err)}`);
+        } catch (err) {
+            speakOutput += 'E não foi possível realizar a busca.';
             console.log(err);
-          }
+        }
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -153,7 +149,7 @@ const FallbackIntentHandler = {
 };
 /* *
  * SessionEndedRequest notifies that a session was ended. This handler will be triggered when a currently open 
- * session is closed for one of the following reasons: 1) The user says "exit" or "quit". 2) The user does not 
+ * session is closed for one of the following reasons: 1) The user says 'exit' or 'quit'. 2) The user does not 
  * respond or says something that does not match an intent defined in your voice model. 3) An error occurs 
  * */
 const SessionEndedRequestHandler = {
@@ -177,7 +173,7 @@ const IntentReflectorHandler = {
     },
     handle(handlerInput) {
         const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
-        const speakOutput = `You just triggered ${intentName}`;
+        const speakOutput = `Você chamou ${intentName}`;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -195,7 +191,7 @@ const ErrorHandler = {
         return true;
     },
     handle(handlerInput, error) {
-        const speakOutput = 'Sorry, I had trouble doing what you asked. Please try again.';
+        const speakOutput = 'Desculpe, tive um problema ao fazer o que você solicitou, tente novamente.';
         console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
 
         return handlerInput.responseBuilder
